@@ -270,8 +270,8 @@ footer a.chat-link { justify-content: start; }
   .hero-playback { z-index: 1; }
 }
 
-.demo-notice { padding: .65rem 1rem; text-align: center; background: var(--cream); border-bottom: 1px solid var(--line); font-size: .9rem; }
 
 .order-preview { width: min(90vw, 34rem); padding: 1rem; }
 .order-preview h2 { margin-bottom: .7rem; }
 .order-preview pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }
+

@@ -271,7 +271,6 @@ function App() {
       <EmailLink />
     </nav></div></header>
     <main id="main" tabIndex={-1}>
-      {demo && <p className="demo-notice">{demoNotice}</p>}
       {!page ? <Home /> : page === 'shop' ? <Shop key={id || "all"} category={id} /> : product ? <Detail key={product.id} product={product} /> : entry ? <section className="wrap section info"><h1>{entry[0]}</h1><p>{entry[1]}</p>{id === 'contact' && <div className="contact-links">{business.email && <a href={`mailto:${business.email}`}>{business.email}</a>}{business.location && <p>{business.location}</p>}</div>}</section> : <section className="wrap section info"><h1>Page unavailable</h1><a href="#/shop">Back to shop</a></section>}
     </main>
     <Footer />
@@ -279,6 +278,7 @@ function App() {
 }
 
 createRoot(document.getElementById('root')).render(<App />)
+
 
 
 
