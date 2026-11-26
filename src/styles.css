@@ -270,3 +270,5 @@ footer a.chat-link { justify-content: start; }
   .hero:has(video) .hero-copy { padding-top: .85rem; }
   .hero-playback { z-index: 1; }
 }
+
+.demo-notice { padding: .65rem 1rem; text-align: center; background: var(--cream); border-bottom: 1px solid var(--line); font-size: .9rem; }

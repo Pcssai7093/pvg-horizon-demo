@@ -9,16 +9,18 @@ import './styles.css'
 
 
 const care = 'Wipe gently with a soft, dry cloth after wear. Keep away from water and perfume, and store separately in a dry pouch.'
-const ordering = 'Share the item name and catalog reference on WhatsApp. Ask for the current price, availability and delivery details before placing your order.'
-const delivery = 'Ask customer care to confirm shipping charges, delivery estimates and return or exchange terms before ordering.'
-const whatsapp = whatsappChatUrl(business.whatsapp)
+const demo = import.meta.env.VITE_STOREFRONT_DEMO === 'true'
+const demoNotice = 'Storefront demo. Orders and payments are disabled.'
+const ordering = demo ? demoNotice : 'Share the item name and catalog reference on WhatsApp. Ask for the current price, availability and delivery details before placing your order.'
+const delivery = demo ? demoNotice : 'Ask customer care to confirm shipping charges, delivery estimates and return or exchange terms before ordering.'
+const whatsapp = demo ? '' : whatsappChatUrl(business.whatsapp)
 const priceFormat = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })
 const priceLabel = product => product.price == null ? 'Price on request' : priceFormat.format(product.price)
 const info = {
   privacy: ['Privacy', 'This storefront has no account or checkout forms. If you contact PVG Horizon through WhatsApp or email, that service handles your message under its own privacy policy. Share only the details needed for your order.'],
-  terms: ['Order terms', business.terms || 'Confirm the item, total price, delivery charges and any return or exchange terms with PVG Horizon before paying. Catalog listings are subject to availability.'],
+  terms: ['Order terms', demo ? demoNotice : business.terms || 'Confirm the item, total price, delivery charges and any return or exchange terms with PVG Horizon before paying. Catalog listings are subject to availability.'],
   'how-to-order': ['How to order', ordering],
-  delivery: ['Shipping and returns', business.shippingAndReturns || delivery],
+  delivery: ['Shipping and returns', demo ? demoNotice : business.shippingAndReturns || delivery],
   care: ['Jewellery care', care],
   contact: ['Contact', whatsapp || business.email ? 'Contact PVG Horizon for questions about products, availability and orders.' : 'Business contact details will appear here when confirmed.'],
 }
@@ -45,7 +47,7 @@ function ChatLink({ className = '' }) {
 
 function Order({ product }) {
   const [quantity, setQuantity] = useState(1)
-  if (!whatsapp) return <span className="button order unavailable">WhatsApp ordering coming soon</span>
+  if (!whatsapp) return <span className="button order unavailable">{demo ? 'Demo only' : 'WhatsApp ordering coming soon'}</span>
   return <div className="order-controls">
     <label>Quantity
       <select value={quantity} onChange={event => setQuantity(Number(event.target.value))}>
@@ -229,7 +231,7 @@ function Detail({ product }) {
         <div className="product-notes">
           <details open><summary>How to style it</summary><p>{product.styling}</p></details>
           <details><summary>Jewellery care</summary><p>{care}</p></details>
-          <details><summary>Delivery and returns</summary><p>{business.shippingAndReturns || delivery}</p><a className="text-link" href="#/info/delivery">Shipping and returns</a></details>
+          <details><summary>Delivery and returns</summary><p>{demo ? demoNotice : business.shippingAndReturns || delivery}</p><a className="text-link" href="#/info/delivery">Shipping and returns</a></details>
         </div>
       </div>
     </div>
@@ -256,6 +258,7 @@ function App() {
       <ChatLink />
     </nav></div></header>
     <main id="main" tabIndex={-1}>
+      {demo && <p className="demo-notice">{demoNotice}</p>}
       {!page ? <Home /> : page === 'shop' ? <Shop key={id || "all"} category={id} /> : product ? <Detail key={product.id} product={product} /> : entry ? <section className="wrap section info"><h1>{entry[0]}</h1><p>{entry[1]}</p>{id === 'contact' && <div className="contact-links">{whatsapp && <ChatLink />}{business.email && <a href={`mailto:${business.email}`}>{business.email}</a>}{business.location && <p>{business.location}</p>}</div>}</section> : <section className="wrap section info"><h1>Page unavailable</h1><a href="#/shop">Back to shop</a></section>}
     </main>
     <Footer />
@@ -263,6 +266,7 @@ function App() {
 }
 
 createRoot(document.getElementById('root')).render(<App />)
+
 
 
 
