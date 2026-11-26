@@ -263,7 +263,10 @@ function App() {
   const [, page, id] = route.split('/')
   const product = page === 'product' ? products.find(item => item.id === id) : null
   const entry = page === 'info' && Object.hasOwn(info, id) ? info[id] : null
-  useEffect(() => { document.title = `${product?.name || entry?.[0] || (page === 'shop' ? 'Shop Necklaces' : 'Indian Imitation Jewellery')} | PVG Horizon` }, [page, product, entry])
+  useEffect(() => {
+    const pageTitle = product?.name || entry?.[0] || (page === 'shop' ? 'Shop Necklaces' : '')
+    document.title = pageTitle ? `${pageTitle} | PVG Horizon` : 'PVG Horizon | Indian Imitation Jewellery'
+  }, [page, product, entry])
   return <>
     <a className="skip" href="#main" onClick={event => { event.preventDefault(); document.getElementById('main').focus() }}>Skip to content</a>
     <header><div className="wrap header-inner"><button type="button" className="menu-toggle" aria-expanded={menu} aria-controls="main-navigation" onClick={() => setMenu(!menu)}><span aria-hidden="true">☰</span><span className="sr-only">Menu</span></button><Mark /><EmailLink className="mobile-contact" /><nav id="main-navigation" data-open={menu} aria-label="Main navigation">
@@ -278,6 +281,7 @@ function App() {
 }
 
 createRoot(document.getElementById('root')).render(<App />)
+
 
 
 
