@@ -14,11 +14,10 @@ excludes ecommerce sites under its usage limits.
 
 ## Store details
 
-Update `src/store-settings.json` before launch. Add the WhatsApp business number
-as digits including the country code, the business email and public location,
-and the confirmed shipping, returns, and order terms. Add prices in INR using
-the product IDs as keys in `prices`. Blank prices show as Price on request.
-The WhatsApp button becomes active when a valid number is configured.
+Update `src/store-settings.json` with the public business email and any confirmed
+shipping and returns terms. Add prices in INR using product IDs as keys in
+`prices`. Blank prices show as Price on request. GitHub Pages builds label the
+site as a demo and show order email previews without sending orders.
 
 The desktop hero uses the model video in `public/catalog/hero.mp4`. The CZ 6198 product photo is the poster and mobile fallback.
 
@@ -38,4 +37,5 @@ To refresh the improved listing covers and alternate photos, run:
 The importer matches the product family and full SKU label, including colour.
 It writes additional JPEGs and an overlay in `src/listing-photos.json`. The
 storefront puts those photos first and keeps original photos as alternate views.
+
 

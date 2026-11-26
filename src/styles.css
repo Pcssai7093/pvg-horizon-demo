@@ -157,8 +157,8 @@ footer a:not(.brand) { display: block; width: fit-content; margin-top: .2rem; te
   .filters { display: flex; flex-wrap: wrap; gap: .4rem; }
   .filters p { width: 100%; margin-bottom: .1rem; }
   .filters a { padding: .45rem .6rem; border: 1px solid var(--line); }
-  .order-bar:has(a.order) { position: fixed; z-index: 3; bottom: 0; inset-inline: 0; margin: 0; padding: .45rem 1rem max(.45rem, env(safe-area-inset-bottom)); background: var(--paper); border-top: 1px solid var(--line); }
-  body:has(a.order) footer { padding-bottom: calc(4.2rem + env(safe-area-inset-bottom)); }
+  .order-bar:has(.order) { position: fixed; z-index: 3; bottom: 0; inset-inline: 0; margin: 0; padding: .45rem 1rem max(.45rem, env(safe-area-inset-bottom)); background: var(--paper); border-top: 1px solid var(--line); }
+  body:has(.order-bar .order) footer { padding-bottom: calc(4.2rem + env(safe-area-inset-bottom)); }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 540px) {
@@ -185,7 +185,7 @@ footer a:not(.brand) { display: block; width: fit-content; margin-top: .2rem; te
 .order-controls select { min-height: 3.2rem; min-width: 4rem; background: var(--paper); color: var(--ink); border: 1px solid var(--line); padding: .35rem; font: inherit; }
 .order-controls .order { flex: 1; }
 @media (max-width: 799px) {
-  body:has(a.order) footer { padding-bottom: calc(5.65rem + env(safe-area-inset-bottom)); }
+  body:has(.order-bar .order) footer { padding-bottom: calc(5.65rem + env(safe-area-inset-bottom)); }
 }
 
 .order-note { color: var(--muted); font-size: .84rem; margin: -.75rem 0 1.35rem; }
@@ -231,8 +231,7 @@ footer a:not(.brand) { display: block; width: fit-content; margin-top: .2rem; te
 
 
 
-.whatsapp-icon { display: block; width: 1.55rem; height: 1.55rem; flex: none; color: #128044; }
-footer .whatsapp-icon, .order .whatsapp-icon { color: #25d366; }
+.email-icon { display: block; width: 1.55rem; height: 1.55rem; flex: none; color: inherit; }
 a.chat-link { display: inline-grid; place-items: center; min-width: 44px; min-height: 44px; padding: .45rem; }
 .header-inner nav a.chat-link, .header-inner a.mobile-contact.chat-link { border: 0; color: var(--wine); }
 .header-inner a.chat-link:hover { background: var(--cream); border-radius: 50%; }
@@ -272,3 +271,7 @@ footer a.chat-link { justify-content: start; }
 }
 
 .demo-notice { padding: .65rem 1rem; text-align: center; background: var(--cream); border-bottom: 1px solid var(--line); font-size: .9rem; }
+
+.order-preview { width: min(90vw, 34rem); padding: 1rem; }
+.order-preview h2 { margin-bottom: .7rem; }
+.order-preview pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }

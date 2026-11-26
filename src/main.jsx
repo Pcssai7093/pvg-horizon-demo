@@ -4,25 +4,23 @@ import React, { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { asset, business, products } from './catalog'
 import { HeroMedia } from './hero'
-import { whatsappChatUrl, whatsappOrderUrl } from './whatsapp'
 import './styles.css'
 
 
 const care = 'Wipe gently with a soft, dry cloth after wear. Keep away from water and perfume, and store separately in a dry pouch.'
 const demo = import.meta.env.VITE_STOREFRONT_DEMO === 'true'
 const demoNotice = 'Storefront demo. Orders and payments are disabled.'
-const ordering = demo ? demoNotice : 'Share the item name and catalog reference on WhatsApp. Ask for the current price, availability and delivery details before placing your order.'
+const ordering = demo ? demoNotice : 'Share the item name and catalog reference by email. Ask for the current price, availability and delivery details before placing your order.'
 const delivery = demo ? demoNotice : 'Ask customer care to confirm shipping charges, delivery estimates and return or exchange terms before ordering.'
-const whatsapp = demo ? '' : whatsappChatUrl(business.whatsapp)
 const priceFormat = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })
 const priceLabel = product => product.price == null ? 'Price on request' : priceFormat.format(product.price)
 const info = {
-  privacy: ['Privacy', 'This storefront has no account or checkout forms. If you contact PVG Horizon through WhatsApp or email, that service handles your message under its own privacy policy. Share only the details needed for your order.'],
+  privacy: ['Privacy', 'This storefront has no account or checkout forms. If you contact PVG Horizon by email, that service handles your message under its own privacy policy. Share only the details needed for your order.'],
   terms: ['Order terms', demo ? demoNotice : business.terms || 'Confirm the item, total price, delivery charges and any return or exchange terms with PVG Horizon before paying. Catalog listings are subject to availability.'],
   'how-to-order': ['How to order', ordering],
   delivery: ['Shipping and returns', demo ? demoNotice : business.shippingAndReturns || delivery],
   care: ['Jewellery care', care],
-  contact: ['Contact', whatsapp || business.email ? 'Contact PVG Horizon for questions about products, availability and orders.' : 'Business contact details will appear here when confirmed.'],
+  contact: ['Contact', business.email ? 'Contact PVG Horizon for questions about products, availability and orders.' : 'Business contact details will appear here when confirmed.'],
 }
 
 function Mark() {
@@ -32,37 +30,52 @@ function Mark() {
   </a>
 }
 
-function WhatsAppIcon() {
-  return <svg className="whatsapp-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M12 2.75a9.25 9.25 0 0 0-8 13.9L2.8 21.2l4.65-1.19A9.25 9.25 0 1 0 12 2.75Z" stroke="currentColor" strokeWidth="1.65" strokeLinejoin="round" />
-    <path d="M9 7.25c-.35-.22-.95-.16-1.2.16-.32.4-.75 1-.75 1.8 0 1.16.67 2.46 1.78 3.66 1.56 1.69 3.18 2.6 4.62 2.61 1.03 0 1.88-.6 2.13-1.25.1-.25.16-.63-.09-.8l-1.82-.98c-.28-.14-.51-.12-.71.13l-.58.66c-.14.16-.32.16-.51.08a8.23 8.23 0 0 1-2.67-2.32c-.14-.2-.14-.34.02-.54l.51-.63c.13-.19.16-.37.07-.6l-.64-1.67c-.04-.12-.09-.24-.16-.31Z" fill="currentColor" />
+function EmailIcon() {
+  return <svg className="email-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <rect x="3" y="5.5" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.65" />
+    <path d="m4 7 8 6 8-6" stroke="currentColor" strokeWidth="1.65" strokeLinejoin="round" />
   </svg>
 }
 
-function ChatLink({ className = '' }) {
-  if (!whatsapp) return <a className={className} href="#/info/contact">Contact</a>
-  return <a className={`chat-link ${className}`} href={whatsapp} aria-label="Chat on WhatsApp"
-    title="Chat on WhatsApp" target="_blank" rel="noopener noreferrer"><WhatsAppIcon /></a>
+function EmailLink({ className = '' }) {
+  return <a className={`chat-link ${className}`} href={business.email ? `mailto:${business.email}` : '#/info/contact'}
+    aria-label="Email PVG Horizon" title="Email PVG Horizon"><EmailIcon /></a>
 }
 
 function Order({ product }) {
   const [quantity, setQuantity] = useState(1)
-  if (!whatsapp) return <span className="button order unavailable">{demo ? 'Demo only' : 'WhatsApp ordering coming soon'}</span>
+  const preview = useRef(null)
+  const subject = `Order enquiry: ${product.name}`
+  const message = [
+    'Hi PVG Horizon, I would like to enquire about:',
+    product.name,
+    `SKU: ${product.sku}`,
+    `Quantity: ${quantity}`,
+    '',
+    'Please confirm availability, total price and delivery details.',
+  ].join('\r\n')
+
   return <div className="order-controls">
     <label>Quantity
       <select value={quantity} onChange={event => setQuantity(Number(event.target.value))}>
         {Array.from({ length: 10 }, (_, index) => index + 1).map(value => <option key={value}>{value}</option>)}
       </select>
     </label>
-    <a className="button order" href={whatsappOrderUrl(whatsapp, product, quantity)} target="_blank" rel="noopener noreferrer" aria-label="Order on WhatsApp">
-      <WhatsAppIcon /> Order
-    </a>
+    {demo ? <>
+      <button type="button" className="button order" onClick={() => preview.current.showModal()}><EmailIcon /> Preview order email</button>
+      <dialog ref={preview} className="lightbox order-preview" aria-label="Order email preview">
+        <form method="dialog"><button>Close</button></form>
+        <h2>Order email preview</h2>
+        <p>{subject}</p>
+        <pre>{message}</pre>
+      </dialog>
+    </> : <a className="button order" href={`mailto:${business.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`}><EmailIcon /> Email to order</a>}
   </div>
 }
 
 function ContactLinks() {
   return <>
-    {whatsapp && <ChatLink />}
+    
     {business.email && <a href={`mailto:${business.email}`}>{business.email}</a>}
     {business.location && <p>{business.location}</p>}
     <a href="#/info/contact">Business enquiries</a>
@@ -220,12 +233,12 @@ function Detail({ product }) {
           {photoCount > 1 && <div className="lightbox-nav"><button type="button" onClick={() => movePhoto(-1)}>Previous</button><span aria-live="polite">{selected + 1} / {photoCount}</span><button type="button" onClick={() => movePhoto(1)}>Next</button></div>}
         </dialog>
         {product.photos.length > 1 && <div className="thumbnails">{product.photos.map((photo, index) => <button key={photo} aria-label={`Show photo ${index + 1}`} aria-pressed={selected === index} onClick={() => setSelected(index)}><img src={asset(photo)} alt="" /></button>)}</div>}
-        </> : <div className="photo-unavailable">Ask for a product photo on WhatsApp</div>}
+        </> : <div className="photo-unavailable">Ask for a product photo by email</div>}
       </div>
       <div className="detail-copy">
         <a className="eyebrow category-link" href={shopLink(product.category)}>{product.category}</a><h1>{product.name}</h1>
         <p className="sku">SKU {product.sku}</p>
-        <p className="price">{priceLabel(product)}</p><div className="order-bar"><Order product={product} /></div>{whatsapp && <p className="order-note">We confirm availability, total price and delivery before you pay.</p>}
+        <p className="price">{priceLabel(product)}</p><div className="order-bar"><Order product={product} /></div>{!demo && <p className="order-note">We confirm availability, total price and delivery by email.</p>}
         <section className="description"><h2>About this necklace</h2><p>{product.description}</p></section>
         <dl className="specs"><div><dt>Jewellery type</dt><dd>Imitation</dd></div><div><dt>Style</dt><dd>{product.category}</dd></div>{product.colour && <div><dt>Colour</dt><dd>{product.colour}</dd></div>}</dl>
         <div className="product-notes">
@@ -253,19 +266,20 @@ function App() {
   useEffect(() => { document.title = `${product?.name || entry?.[0] || (page === 'shop' ? 'Shop Necklaces' : 'Indian Imitation Jewellery')} | PVG Horizon` }, [page, product, entry])
   return <>
     <a className="skip" href="#main" onClick={event => { event.preventDefault(); document.getElementById('main').focus() }}>Skip to content</a>
-    <header><div className="wrap header-inner"><button type="button" className="menu-toggle" aria-expanded={menu} aria-controls="main-navigation" onClick={() => setMenu(!menu)}><span aria-hidden="true">☰</span><span className="sr-only">Menu</span></button><Mark /><ChatLink className="mobile-contact" /><nav id="main-navigation" data-open={menu} aria-label="Main navigation">
+    <header><div className="wrap header-inner"><button type="button" className="menu-toggle" aria-expanded={menu} aria-controls="main-navigation" onClick={() => setMenu(!menu)}><span aria-hidden="true">☰</span><span className="sr-only">Menu</span></button><Mark /><EmailLink className="mobile-contact" /><nav id="main-navigation" data-open={menu} aria-label="Main navigation">
       <a onClick={() => setMenu(false)} href="#/" aria-current={!page ? 'page' : undefined}>Home</a><a onClick={() => setMenu(false)} href="#/shop" aria-current={page === 'shop' ? 'page' : undefined}>Shop</a>
-      <ChatLink />
+      <EmailLink />
     </nav></div></header>
     <main id="main" tabIndex={-1}>
       {demo && <p className="demo-notice">{demoNotice}</p>}
-      {!page ? <Home /> : page === 'shop' ? <Shop key={id || "all"} category={id} /> : product ? <Detail key={product.id} product={product} /> : entry ? <section className="wrap section info"><h1>{entry[0]}</h1><p>{entry[1]}</p>{id === 'contact' && <div className="contact-links">{whatsapp && <ChatLink />}{business.email && <a href={`mailto:${business.email}`}>{business.email}</a>}{business.location && <p>{business.location}</p>}</div>}</section> : <section className="wrap section info"><h1>Page unavailable</h1><a href="#/shop">Back to shop</a></section>}
+      {!page ? <Home /> : page === 'shop' ? <Shop key={id || "all"} category={id} /> : product ? <Detail key={product.id} product={product} /> : entry ? <section className="wrap section info"><h1>{entry[0]}</h1><p>{entry[1]}</p>{id === 'contact' && <div className="contact-links">{business.email && <a href={`mailto:${business.email}`}>{business.email}</a>}{business.location && <p>{business.location}</p>}</div>}</section> : <section className="wrap section info"><h1>Page unavailable</h1><a href="#/shop">Back to shop</a></section>}
     </main>
     <Footer />
   </>
 }
 
 createRoot(document.getElementById('root')).render(<App />)
+
 
 
 
