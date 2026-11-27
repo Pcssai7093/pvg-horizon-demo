@@ -12,15 +12,15 @@ import './styles.css'
 const care = 'Wipe gently with a soft, dry cloth after wear. Keep away from water and perfume, and store separately in a dry pouch.'
 const demo = import.meta.env.VITE_STOREFRONT_DEMO === 'true'
 const exhibitionNotice = 'This collection is for viewing. Orders and payments are unavailable through this site.'
-const ordering = demo ? exhibitionNotice : 'Share the item name and catalog reference by email. Ask for the current price, availability and delivery details before placing your order.'
-const delivery = demo ? exhibitionNotice : 'Ask customer care to confirm shipping charges, delivery estimates and return or exchange terms before ordering.'
+const ordering = 'For purchase enquiries, email pvghorizon@gmail.com with the product name, SKU and quantity, or use the cart to include multiple pieces in one email. We can confirm availability and pricing by email.'
+const delivery = 'For shipping estimates, delivery charges or questions about returns, email pvghorizon@gmail.com with the product SKU and your delivery PIN code. If you have already contacted us, reply to the same email thread.'
 const priceFormat = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })
 const priceLabel = product => product.price == null ? 'Price on request' : priceFormat.format(product.price)
 const info = {
   privacy: ['Privacy', 'PVG Horizon saves your cart in this browser and has no account or checkout forms. If you contact PVG Horizon by email, that service handles your message under its own privacy policy. Share only the details needed for your enquiry.'],
   terms: ['Order terms', demo ? exhibitionNotice : business.terms || 'Confirm the item, total price, delivery charges and any return or exchange terms with PVG Horizon before paying. Catalog listings are subject to availability.'],
   'how-to-order': ['How to order', ordering],
-  delivery: ['Shipping and returns', demo ? exhibitionNotice : business.shippingAndReturns || delivery],
+  delivery: ['Shipping and returns', business.shippingAndReturns || delivery],
   care: ['Jewellery care', care],
   contact: ['Contact Us', 'Have a question about a necklace or the collection? Email PVG Horizon with your enquiry.'],
 }
@@ -305,7 +305,7 @@ function Detail({ product, onAdd }) {
         <div className="product-notes">
           <details open><summary>How to style it</summary><p>{product.styling}</p></details>
           <details><summary>Jewellery care</summary><p>{care}</p></details>
-          <details><summary>Delivery and returns</summary><p>{demo ? exhibitionNotice : business.shippingAndReturns || delivery}</p><a className="text-link" href="#/info/delivery">Shipping and returns</a></details>
+          <details><summary>Delivery and returns</summary><p>{business.shippingAndReturns || delivery}</p><a className="text-link" href="#/info/delivery">Shipping and returns</a></details>
         </div>
       </div>
     </div>
@@ -356,7 +356,12 @@ function App() {
       <EmailLink />
     </nav><CartLink count={cartCount} active={page === 'cart'} /></div></header>
     <main id="main" tabIndex={-1}>
-      {!page ? <Home /> : page === 'shop' ? <Shop key={id || "all"} category={id} /> : product ? <Detail key={product.id} product={product} onAdd={addToCart} /> : page === 'cart' ? <CartPage items={cartItems} onQuantity={setCartQuantity} EmailDialog={EmailDialog} /> : page === 'about' ? <AboutPage /> : entry ? <section className="wrap section info"><h1>{entry[0]}</h1><p>{entry[1]}</p>{id === 'contact' && <div className="contact-links">{business.email && <><p>{business.email}</p><EmailLink className="button contact-action">Write an enquiry</EmailLink></>}{business.location && <p>{business.location}</p>}</div>}</section> : <section className="wrap section info"><h1>Page unavailable</h1><a href="#/shop">Back to shop</a></section>}
+      {!page ? <Home /> : page === 'shop' ? <Shop key={id || "all"} category={id} /> : product ? <Detail key={product.id} product={product} onAdd={addToCart} /> : page === 'cart' ? <CartPage items={cartItems} onQuantity={setCartQuantity} EmailDialog={EmailDialog} /> : page === 'about' ? <AboutPage /> : entry ? <section className="wrap section info"><h1>{entry[0]}</h1><p>{entry[1]}</p>
+      {(id === 'how-to-order' || id === 'delivery') && <div className="contact-links">
+        <EmailLink className="button contact-action">{id === 'how-to-order' ? 'Email a purchase enquiry' : 'Email about shipping or returns'}</EmailLink>
+        {id === 'how-to-order' && <a className="text-link" href="#/cart">View your cart</a>}
+      </div>}
+      {id === 'contact' && <div className="contact-links">{business.email && <><p>{business.email}</p><EmailLink className="button contact-action">Write an enquiry</EmailLink></>}{business.location && <p>{business.location}</p>}</div>}</section> : <section className="wrap section info"><h1>Page unavailable</h1><a href="#/shop">Back to shop</a></section>}
     </main>
     <Footer />
   </>
