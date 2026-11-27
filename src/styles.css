@@ -286,3 +286,29 @@ footer a.chat-link { justify-content: start; }
 
 .hero-media video { opacity: 0; transition: opacity .55s ease-out; }
 .hero-media video.hero-video-ready { opacity: 1; }
+
+.arch-grid {
+  --jharokha: polygon(
+    0% 100%, 0% 30%, 0.47% 26.7%, 1.8% 23.7%, 3.86% 21.05%,
+    6.53% 18.8%, 9.69% 17.01%, 13.22% 15.73%, 17% 15%, 19.05% 12.3%,
+    21.66% 10.2%, 24.66% 8.68%, 27.87% 7.71%, 31.11% 7.29%, 34.21% 7.39%,
+    37% 8%, 38.51% 6.51%, 40.36% 5.36%, 42.43% 4.43%, 44.57% 3.57%,
+    46.64% 2.64%, 48.49% 1.49%, 50% 0%, 51.51% 1.49%, 53.36% 2.64%,
+    55.43% 3.57%, 57.57% 4.43%, 59.64% 5.36%, 61.49% 6.51%, 63% 8%,
+    65.79% 7.39%, 68.89% 7.29%, 72.13% 7.71%, 75.34% 8.68%, 78.34% 10.2%,
+    80.95% 12.3%, 83% 15%, 86.78% 15.73%, 90.31% 17.01%, 93.47% 18.8%,
+    96.14% 21.05%, 98.2% 23.7%, 99.53% 26.7%, 100% 30%, 100% 100%
+  );
+}
+.card-arch { display: grid; aspect-ratio: 5 / 7; padding: 1px; background: #ab7c37; clip-path: var(--jharokha); }
+.card-arch-inner { display: grid; min-width: 0; min-height: 0; padding: 13% 3% 3%; background: #f3e8d8; clip-path: var(--jharokha); }
+.card-arch .card-arch-inner img { aspect-ratio: auto; min-height: 0; height: 100%; object-fit: contain; background: transparent; }
+.card-arch .photo-unavailable { aspect-ratio: auto; background: transparent; }
+.arch-grid .card-copy { align-items: center; padding-inline: .9rem; text-align: center; }
+.arch-grid .card-price { padding-right: 0; }
+.arch-grid .card-link { display: none; }
+@media (max-width: 540px) {
+  .card-arch { aspect-ratio: 4 / 5; }
+  .arch-grid .card-copy { padding-inline: .2rem; }
+}
+

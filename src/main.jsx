@@ -128,9 +128,11 @@ function CatalogImage({ photos, alt, className, eager = false }) {
   />
 }
 
-function Grid({ entries }) {
-  return <div className="product-grid">{entries.map((product, index) => <a className="card" key={product.id} href={`#/product/${product.id}`}>
-    <CatalogImage photos={product.photos} alt={product.name} eager={index < 4} />
+function Grid({ entries, arched = false }) {
+  return <div className={arched ? 'product-grid arch-grid' : 'product-grid'}>{entries.map((product, index) => <a className="card" key={product.id} href={`#/product/${product.id}`}>
+    {arched ? <div className="card-arch"><div className="card-arch-inner">
+      <CatalogImage photos={product.photos} alt={product.name} eager={index < 4} />
+    </div></div> : <CatalogImage photos={product.photos} alt={product.name} eager={index < 4} />}
     <div className="card-copy"><span className="card-category">{product.category}</span><h3>{product.name}</h3><p className="card-price">{priceLabel(product)}</p><span className="card-link" aria-hidden="true">↗</span></div>
   </a>)}</div>
 }
@@ -172,7 +174,7 @@ function Home() {
     </section>
     <section className="featured"><div className="wrap section">
       <div className="section-heading"><h2>Featured CZ necklaces</h2><a className="text-link" href={czLink}>View all CZ <span aria-hidden="true">↗</span></a></div>
-      <Grid entries={featured} />
+      <Grid entries={featured} arched />
     </div></section>
     <section className="wrap section spotlight">
       <a className="spotlight-photo" href={`#/product/${spotlight.id}`}>
@@ -220,7 +222,7 @@ function Shop({ category }) {
             {colours.map(name => <option key={name}>{name}</option>)}
           </select></label>}
         </div>
-        <Grid entries={visible.slice(0, count)} />
+        <Grid entries={visible.slice(0, count)} arched={active === czCollection} />
         {count < visible.length && <div className="load-more"><button className="button" onClick={() => setCount(count + pageSize)}>Show more necklaces</button></div>}
       </div>
     </div>
@@ -301,6 +303,7 @@ function App() {
 }
 
 createRoot(document.getElementById('root')).render(<App />)
+
 
 
 
