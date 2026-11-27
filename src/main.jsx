@@ -43,10 +43,6 @@ function EmailDialog({ dialogRef, subject = '', message = '' }) {
     const values = new FormData(event.currentTarget)
     const subjectText = values.get('subject').trim()
     const bodyText = values.get('message').trim()
-    if (event.nativeEvent.submitter?.value === 'email-app') {
-      window.location.href = `mailto:${business.email}?subject=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`
-      return
-    }
     const draft = new URL('https://mail.google.com/mail/')
     draft.search = new URLSearchParams({ view: 'cm', fs: '1', to: business.email, su: subjectText, body: bodyText }).toString()
     window.open(draft.href, '_blank', 'noopener,noreferrer')
@@ -60,7 +56,6 @@ function EmailDialog({ dialogRef, subject = '', message = '' }) {
       <label>Subject<input name="subject" defaultValue={subject} required maxLength={160} /></label>
       <label>Message<textarea name="message" defaultValue={message} required rows={5} maxLength={1200} /></label>
       <button type="submit" className="button"><EmailIcon /> Open in Gmail</button>
-      <button type="submit" value="email-app">Use another email app</button>
     </form>
   </dialog>
 }
@@ -306,5 +301,6 @@ function App() {
 }
 
 createRoot(document.getElementById('root')).render(<App />)
+
 
 
