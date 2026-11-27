@@ -337,3 +337,12 @@ footer a.chat-link { justify-content: start; }
   }
 }
 
+
+.collection-spotlights { padding-bottom: 0; }
+.collection-spotlights .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (min-width: 1150px) {
+  .collection-spotlights .product-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .collection-spotlights .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

@@ -154,8 +154,22 @@ const collectionDescriptions = {
 }
 const shopLink = category => category ? `#/shop/${encodeURIComponent(category)}` : '#/shop'
 
+const spotlightSkus = {
+  Layered: '5Line Red',
+  Traditional: 'Valadanda Shimmer Maroon',
+  'Stone designs': 'Pumpkin Stone Blue',
+  'Short necklaces': 'Short Ball Chain 2701',
+  'Pearl styles': 'Moti 2604',
+  Mangalsutra: 'Mangalsutra Black',
+}
+
 function Home() {
   const spotlight = products.find(product => product.id === 'catalog-cz-cz-6198')
+  const moreSpotlights = collectionNames.filter(category => category !== czCollection).flatMap(category => {
+    const candidates = products.filter(product => product.category === category && product.photos.length)
+    const selection = candidates.find(product => product.sku === spotlightSkus[category]) ?? candidates[0]
+    return selection ? [selection] : []
+  })
   const featured = [
     ['catalog-cz-cz-2814', 'catalog-cz-cz-2814-2.jpg'],
     ['catalog-cz-cz-6644', 'catalog-cz-cz-6644-3.jpg'],
@@ -190,6 +204,10 @@ function Home() {
         <p>{spotlight.description}</p>
         <a className="text-link" href={`#/product/${spotlight.id}`}>View necklace <span aria-hidden="true">↗</span></a>
       </div>
+    </section>
+    <section className="wrap section collection-spotlights">
+      <div className="section-heading"><h2>More collection spotlights</h2><a className="text-link" href="#/shop">All collections <span aria-hidden="true">↗</span></a></div>
+      <Grid entries={moreSpotlights} arched />
     </section>
     <section className="wrap section about">
       <h2>About PVG Horizon</h2>
@@ -307,6 +325,7 @@ function App() {
 }
 
 createRoot(document.getElementById('root')).render(<App />)
+
 
 
 
