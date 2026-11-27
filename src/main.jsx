@@ -41,19 +41,26 @@ function EmailDialog({ dialogRef, subject = '', message = '' }) {
   function openEmail(event) {
     event.preventDefault()
     const values = new FormData(event.currentTarget)
-    const subjectText = encodeURIComponent(values.get('subject').trim())
-    const bodyText = encodeURIComponent(values.get('message').trim())
-    window.location.href = `mailto:${business.email}?subject=${subjectText}&body=${bodyText}`
+    const subjectText = values.get('subject').trim()
+    const bodyText = values.get('message').trim()
+    if (event.nativeEvent.submitter?.value === 'email-app') {
+      window.location.href = `mailto:${business.email}?subject=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`
+      return
+    }
+    const draft = new URL('https://mail.google.com/mail/')
+    draft.search = new URLSearchParams({ view: 'cm', fs: '1', to: business.email, su: subjectText, body: bodyText }).toString()
+    window.open(draft.href, '_blank', 'noopener,noreferrer')
   }
 
   return <dialog ref={dialogRef} className="lightbox enquiry-dialog" aria-label="Email enquiry">
     <form method="dialog" className="enquiry-close"><button>Close</button></form>
     <h2>Email us</h2>
-    <p>Write your enquiry, then open it in your email app to send.</p>
+    <p>Write your enquiry, then review and send it from your email account.</p>
     <form className="enquiry-form" onSubmit={openEmail}>
       <label>Subject<input name="subject" defaultValue={subject} required maxLength={160} /></label>
       <label>Message<textarea name="message" defaultValue={message} required rows={5} maxLength={1200} /></label>
-      <button type="submit" className="button"><EmailIcon /> Open email app</button>
+      <button type="submit" className="button"><EmailIcon /> Open in Gmail</button>
+      <button type="submit" value="email-app">Use another email app</button>
     </form>
   </dialog>
 }
@@ -299,4 +306,5 @@ function App() {
 }
 
 createRoot(document.getElementById('root')).render(<App />)
+
 
