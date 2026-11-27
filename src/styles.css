@@ -286,7 +286,7 @@ footer a.chat-link { justify-content: start; }
 .hero-media video { opacity: 0; transition: opacity .55s ease-out; }
 .hero-media video.hero-video-ready { opacity: 1; }
 
-.arch-grid, .spotlight-photo {
+.arch-grid, .spotlight-photo, .hero-copy {
   --jharokha: polygon(
     0% 100%, 0% 30%, 0.47% 26.7%, 1.8% 23.7%, 3.86% 21.05%,
     6.53% 18.8%, 9.69% 17.01%, 13.22% 15.73%, 17% 15%, 19.05% 12.3%,
@@ -312,4 +312,28 @@ footer a.chat-link { justify-content: start; }
 }
 
 
+
+
+
+.hero-copy {
+  position: relative;
+  isolation: isolate;
+  margin: clamp(1rem, 2.5vw, 2.75rem) clamp(.75rem, 2vw, 2rem) clamp(1rem, 2.5vw, 2.75rem) clamp(1rem, 5vw, 5.5rem);
+  padding: clamp(4.5rem, 8vw, 9rem) clamp(1.25rem, 3.4vw, 4rem) clamp(2rem, 4vw, 4rem);
+}
+.hero-copy::before, .hero-copy::after {
+  content: '';
+  position: absolute;
+  clip-path: var(--jharokha);
+  pointer-events: none;
+  z-index: -1;
+}
+.hero-copy::before { inset: 0; background: #ab7c37; }
+.hero-copy::after { inset: 1px; background: var(--cream); }
+@media (max-width: 799px) {
+  .hero-copy, .hero:has(.hero-media-video) .hero-copy {
+    margin: .35rem max(1rem, 5vw) 1.75rem;
+    padding: clamp(4.9rem, 17vw, 6rem) max(1.25rem, 6vw) 1.75rem;
+  }
+}
 
