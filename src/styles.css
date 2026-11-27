@@ -193,8 +193,7 @@ footer a:not(.brand) { display: block; width: fit-content; margin-top: .2rem; te
 @media (max-width: 799px) {
 }
 .spotlight { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: center; gap: clamp(1rem, 5vw, 5rem); padding-bottom: 0; }
-.spotlight-photo { display: block; background: var(--cream); }
-.spotlight-photo img { aspect-ratio: 1.6; object-fit: contain; }
+.spotlight-photo { display: block; width: min(100%, 25rem); justify-self: center; }
 .spotlight-copy h2 { margin: .5rem 0 .8rem; }
 .spotlight-copy p:not(.eyebrow) { color: var(--muted); margin-bottom: 1rem; max-width: 44ch; }
 @media (max-width: 640px) {
@@ -287,7 +286,7 @@ footer a.chat-link { justify-content: start; }
 .hero-media video { opacity: 0; transition: opacity .55s ease-out; }
 .hero-media video.hero-video-ready { opacity: 1; }
 
-.arch-grid {
+.arch-grid, .spotlight-photo {
   --jharokha: polygon(
     0% 100%, 0% 30%, 0.47% 26.7%, 1.8% 23.7%, 3.86% 21.05%,
     6.53% 18.8%, 9.69% 17.01%, 13.22% 15.73%, 17% 15%, 19.05% 12.3%,
@@ -311,5 +310,6 @@ footer a.chat-link { justify-content: start; }
   .card-arch { aspect-ratio: 4 / 5; }
   .arch-grid .card-copy { padding-inline: .2rem; }
 }
+
 
 

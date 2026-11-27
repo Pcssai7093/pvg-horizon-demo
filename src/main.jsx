@@ -128,11 +128,15 @@ function CatalogImage({ photos, alt, className, eager = false }) {
   />
 }
 
+function ArchPhoto({ children }) {
+  return <div className="card-arch"><div className="card-arch-inner">{children}</div></div>
+}
+
 function Grid({ entries, arched = false }) {
   return <div className={arched ? 'product-grid arch-grid' : 'product-grid'}>{entries.map((product, index) => <a className="card" key={product.id} href={`#/product/${product.id}`}>
-    {arched ? <div className="card-arch"><div className="card-arch-inner">
+    {arched ? <ArchPhoto>
       <CatalogImage photos={product.photos} alt={product.name} eager={index < 4} />
-    </div></div> : <CatalogImage photos={product.photos} alt={product.name} eager={index < 4} />}
+    </ArchPhoto> : <CatalogImage photos={product.photos} alt={product.name} eager={index < 4} />}
     <div className="card-copy"><span className="card-category">{product.category}</span><h3>{product.name}</h3><p className="card-price">{priceLabel(product)}</p><span className="card-link" aria-hidden="true">↗</span></div>
   </a>)}</div>
 }
@@ -178,7 +182,7 @@ function Home() {
     </div></section>
     <section className="wrap section spotlight">
       <a className="spotlight-photo" href={`#/product/${spotlight.id}`}>
-        <img src={asset(spotlight.photos[0])} alt={spotlight.name} loading="lazy" />
+        <ArchPhoto><CatalogImage photos={spotlight.photos} alt={spotlight.name} /></ArchPhoto>
       </a>
       <div className="spotlight-copy">
         <p className="eyebrow">CZ necklace spotlight</p>
@@ -303,6 +307,7 @@ function App() {
 }
 
 createRoot(document.getElementById('root')).render(<App />)
+
 
 
 
