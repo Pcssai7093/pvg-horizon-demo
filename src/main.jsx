@@ -9,18 +9,18 @@ import './styles.css'
 
 const care = 'Wipe gently with a soft, dry cloth after wear. Keep away from water and perfume, and store separately in a dry pouch.'
 const demo = import.meta.env.VITE_STOREFRONT_DEMO === 'true'
-const demoNotice = 'Storefront demo. Orders and payments are disabled.'
-const ordering = demo ? demoNotice : 'Share the item name and catalog reference by email. Ask for the current price, availability and delivery details before placing your order.'
-const delivery = demo ? demoNotice : 'Ask customer care to confirm shipping charges, delivery estimates and return or exchange terms before ordering.'
+const exhibitionNotice = 'This collection is for viewing. Orders and payments are unavailable through this site.'
+const ordering = demo ? exhibitionNotice : 'Share the item name and catalog reference by email. Ask for the current price, availability and delivery details before placing your order.'
+const delivery = demo ? exhibitionNotice : 'Ask customer care to confirm shipping charges, delivery estimates and return or exchange terms before ordering.'
 const priceFormat = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })
 const priceLabel = product => product.price == null ? 'Price on request' : priceFormat.format(product.price)
 const info = {
-  privacy: ['Privacy', 'This storefront has no account or checkout forms. If you contact PVG Horizon by email, that service handles your message under its own privacy policy. Share only the details needed for your order.'],
-  terms: ['Order terms', demo ? demoNotice : business.terms || 'Confirm the item, total price, delivery charges and any return or exchange terms with PVG Horizon before paying. Catalog listings are subject to availability.'],
+  privacy: ['Privacy', 'PVG Horizon has no account or checkout forms. If you contact PVG Horizon by email, that service handles your message under its own privacy policy. Share only the details needed for your enquiry.'],
+  terms: ['Order terms', demo ? exhibitionNotice : business.terms || 'Confirm the item, total price, delivery charges and any return or exchange terms with PVG Horizon before paying. Catalog listings are subject to availability.'],
   'how-to-order': ['How to order', ordering],
-  delivery: ['Shipping and returns', demo ? demoNotice : business.shippingAndReturns || delivery],
+  delivery: ['Shipping and returns', demo ? exhibitionNotice : business.shippingAndReturns || delivery],
   care: ['Jewellery care', care],
-  contact: ['Contact', business.email ? 'Contact PVG Horizon for questions about products, availability and orders.' : 'Business contact details will appear here when confirmed.'],
+  contact: ['Contact Us', 'Have a question about a necklace or the collection? Email PVG Horizon with your enquiry.'],
 }
 
 function Mark() {
@@ -37,22 +37,47 @@ function EmailIcon() {
   </svg>
 }
 
-function EmailLink({ className = '' }) {
-  return <a className={`chat-link ${className}`} href={business.email ? `mailto:${business.email}` : '#/info/contact'}
-    aria-label="Email PVG Horizon" title="Email PVG Horizon"><EmailIcon /></a>
+function EmailDialog({ dialogRef, subject = '', message = '' }) {
+  function openEmail(event) {
+    event.preventDefault()
+    const values = new FormData(event.currentTarget)
+    const subjectText = encodeURIComponent(values.get('subject').trim())
+    const bodyText = encodeURIComponent(values.get('message').trim())
+    window.location.href = `mailto:${business.email}?subject=${subjectText}&body=${bodyText}`
+  }
+
+  return <dialog ref={dialogRef} className="lightbox enquiry-dialog" aria-label="Email enquiry">
+    <form method="dialog" className="enquiry-close"><button>Close</button></form>
+    <h2>Email us</h2>
+    <p>Write your enquiry, then open it in your email app to send.</p>
+    <form className="enquiry-form" onSubmit={openEmail}>
+      <label>Subject<input name="subject" defaultValue={subject} required maxLength={160} /></label>
+      <label>Message<textarea name="message" defaultValue={message} required rows={5} maxLength={1200} /></label>
+      <button type="submit" className="button"><EmailIcon /> Open email app</button>
+    </form>
+  </dialog>
+}
+
+function EmailLink({ className = '', children }) {
+  const dialogRef = useRef(null)
+  return <>
+    <button type="button" className={`chat-link ${className}`} onClick={() => dialogRef.current.showModal()}
+      aria-label={children ? undefined : 'Email PVG Horizon'} title="Email PVG Horizon"><EmailIcon />{children}</button>
+    <EmailDialog dialogRef={dialogRef} />
+  </>
 }
 
 function Order({ product }) {
   const [quantity, setQuantity] = useState(1)
   const preview = useRef(null)
-  const subject = `Order enquiry: ${product.name}`
+  const subject = `Product enquiry: ${product.name}`
   const message = [
     'Hi PVG Horizon, I would like to enquire about:',
     product.name,
     `SKU: ${product.sku}`,
     `Quantity: ${quantity}`,
     '',
-    'Please confirm availability, total price and delivery details.',
+    'Could you share more information about this piece?',
   ].join('\r\n')
 
   return <div className="order-controls">
@@ -61,15 +86,8 @@ function Order({ product }) {
         {Array.from({ length: 10 }, (_, index) => index + 1).map(value => <option key={value}>{value}</option>)}
       </select>
     </label>
-    {demo ? <>
-      <button type="button" className="button order" onClick={() => preview.current.showModal()}><EmailIcon /> Preview order email</button>
-      <dialog ref={preview} className="lightbox order-preview" aria-label="Order email preview">
-        <form method="dialog"><button>Close</button></form>
-        <h2>Order email preview</h2>
-        <p>{subject}</p>
-        <pre>{message}</pre>
-      </dialog>
-    </> : <a className="button order" href={`mailto:${business.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`}><EmailIcon /> Email to order</a>}
+    <button type="button" className="button order" onClick={() => preview.current.showModal()}><EmailIcon /> Enquire by email</button>
+    <EmailDialog key={quantity} dialogRef={preview} subject={subject} message={message} />
   </div>
 }
 
@@ -78,7 +96,7 @@ function ContactLinks() {
     
     {business.email && <a href={`mailto:${business.email}`}>{business.email}</a>}
     {business.location && <p>{business.location}</p>}
-    <a href="#/info/contact">Business enquiries</a>
+    <a href="#/info/contact">Contact Us</a>
   </>
 }
 
@@ -238,13 +256,13 @@ function Detail({ product }) {
       <div className="detail-copy">
         <a className="eyebrow category-link" href={shopLink(product.category)}>{product.category}</a><h1>{product.name}</h1>
         <p className="sku">SKU {product.sku}</p>
-        <p className="price">{priceLabel(product)}</p><div className="order-bar"><Order product={product} /></div>{!demo && <p className="order-note">We confirm availability, total price and delivery by email.</p>}
+        <p className="price">{priceLabel(product)}</p><div className="order-bar"><Order product={product} /></div>
         <section className="description"><h2>About this necklace</h2><p>{product.description}</p></section>
         <dl className="specs"><div><dt>Jewellery type</dt><dd>Imitation</dd></div><div><dt>Style</dt><dd>{product.category}</dd></div>{product.colour && <div><dt>Colour</dt><dd>{product.colour}</dd></div>}</dl>
         <div className="product-notes">
           <details open><summary>How to style it</summary><p>{product.styling}</p></details>
           <details><summary>Jewellery care</summary><p>{care}</p></details>
-          <details><summary>Delivery and returns</summary><p>{demo ? demoNotice : business.shippingAndReturns || delivery}</p><a className="text-link" href="#/info/delivery">Shipping and returns</a></details>
+          <details><summary>Delivery and returns</summary><p>{demo ? exhibitionNotice : business.shippingAndReturns || delivery}</p><a className="text-link" href="#/info/delivery">Shipping and returns</a></details>
         </div>
       </div>
     </div>
@@ -270,30 +288,15 @@ function App() {
   return <>
     <a className="skip" href="#main" onClick={event => { event.preventDefault(); document.getElementById('main').focus() }}>Skip to content</a>
     <header><div className="wrap header-inner"><button type="button" className="menu-toggle" aria-expanded={menu} aria-controls="main-navigation" onClick={() => setMenu(!menu)}><span aria-hidden="true">☰</span><span className="sr-only">Menu</span></button><Mark /><EmailLink className="mobile-contact" /><nav id="main-navigation" data-open={menu} aria-label="Main navigation">
-      <a onClick={() => setMenu(false)} href="#/" aria-current={!page ? 'page' : undefined}>Home</a><a onClick={() => setMenu(false)} href="#/shop" aria-current={page === 'shop' ? 'page' : undefined}>Shop</a>
+      <a onClick={() => setMenu(false)} href="#/" aria-current={!page ? 'page' : undefined}>Home</a><a onClick={() => setMenu(false)} href="#/shop" aria-current={page === 'shop' ? 'page' : undefined}>Shop</a><a href="#/info/contact" aria-current={id === 'contact' ? 'page' : undefined}>Contact Us</a>
       <EmailLink />
     </nav></div></header>
     <main id="main" tabIndex={-1}>
-      {!page ? <Home /> : page === 'shop' ? <Shop key={id || "all"} category={id} /> : product ? <Detail key={product.id} product={product} /> : entry ? <section className="wrap section info"><h1>{entry[0]}</h1><p>{entry[1]}</p>{id === 'contact' && <div className="contact-links">{business.email && <a href={`mailto:${business.email}`}>{business.email}</a>}{business.location && <p>{business.location}</p>}</div>}</section> : <section className="wrap section info"><h1>Page unavailable</h1><a href="#/shop">Back to shop</a></section>}
+      {!page ? <Home /> : page === 'shop' ? <Shop key={id || "all"} category={id} /> : product ? <Detail key={product.id} product={product} /> : entry ? <section className="wrap section info"><h1>{entry[0]}</h1><p>{entry[1]}</p>{id === 'contact' && <div className="contact-links">{business.email && <><p>{business.email}</p><EmailLink className="button contact-action">Write an enquiry</EmailLink></>}{business.location && <p>{business.location}</p>}</div>}</section> : <section className="wrap section info"><h1>Page unavailable</h1><a href="#/shop">Back to shop</a></section>}
     </main>
     <Footer />
   </>
 }
 
 createRoot(document.getElementById('root')).render(<App />)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
