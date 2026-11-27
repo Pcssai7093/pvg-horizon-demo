@@ -157,7 +157,7 @@ const shopLink = category => category ? `#/shop/${encodeURIComponent(category)}`
 const spotlightSkus = {
   Layered: '5Line Red',
   Traditional: 'Valadanda Shimmer Maroon',
-  'Stone designs': 'Pumpkin Stone Blue',
+  'Stone designs': 'Nek2 Double Stone Green',
   'Short necklaces': 'Short Ball Chain 2701',
   'Pearl styles': 'Moti 2604',
   Mangalsutra: 'Mangalsutra Black',
@@ -168,7 +168,10 @@ function Home() {
   const moreSpotlights = collectionNames.filter(category => category !== czCollection).flatMap(category => {
     const candidates = products.filter(product => product.category === category && product.photos.length)
     const selection = candidates.find(product => product.sku === spotlightSkus[category]) ?? candidates[0]
-    return selection ? [selection] : []
+    if (!selection) return []
+    if (selection.sku !== 'Short Ball Chain 2701' || !selection.photos[2]) return [selection]
+    const [first, second, third, ...remaining] = selection.photos
+    return [{ ...selection, photos: [third, first, second, ...remaining] }]
   })
   const featured = [
     ['catalog-cz-cz-2814', 'catalog-cz-cz-2814-2.jpg'],
@@ -325,6 +328,7 @@ function App() {
 }
 
 createRoot(document.getElementById('root')).render(<App />)
+
 
 
 
